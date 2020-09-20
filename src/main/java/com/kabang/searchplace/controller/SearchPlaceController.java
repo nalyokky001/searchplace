@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Positive;
 import java.util.List;
 
 @RestController
@@ -24,30 +22,24 @@ public class SearchPlaceController {
 
     @PostMapping("/search/place")
     @ResponseBody
-    public List<SearchPlaceResponseDto> searchPlace(@RequestBody @Valid SearchPlaceRequestDto requestPlace) {
+    public List<SearchPlaceResponseDto> searchPlace(@RequestBody @Valid SearchPlaceRequestDto requestDto) {
 
         SearchPlace searchPlace = new SearchPlace();
-        searchPlace.setUserId(requestPlace.getUserId());
-        searchPlace.setKeyword(requestPlace.getKeyword());
+        searchPlace.setUserId(requestDto.getUserId());
+        searchPlace.setKeyword(requestDto.getKeyword());
 
-        List<SearchPlaceResponseDto> result = searchPlaceService.searchPlace(searchPlace);
-
-        return result;
+        return searchPlaceService.searchPlace(searchPlace);
     }
 
     @PostMapping("/search/history")
     @ResponseBody
-    public List<SearchPlace> searchHistory(@RequestBody @Valid SearchHistoryRequestDto requestDto) {
-
-        SearchPlace searchPlace = new SearchPlace();
-        searchPlace.setUserId(requestDto.getUserId());
-
-        return searchPlaceService.searchHistory(searchPlace);
+    public List<SearchHistoryResponseDto> searchHistory(@RequestBody @Valid SearchHistoryRequestDto requestDto) {
+        return searchPlaceService.searchHistory(requestDto.getUserId());
     }
 
     @GetMapping("/search/favorite")
     @ResponseBody
-    public List<SearchFavoriteDto> searchFavorite() {
+    public List<SearchFavoriteResponseDto> searchFavorite() {
         return searchPlaceService.searchFavorite();
     }
 }

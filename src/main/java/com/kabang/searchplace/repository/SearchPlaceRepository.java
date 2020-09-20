@@ -1,7 +1,7 @@
 package com.kabang.searchplace.repository;
 
 import com.kabang.searchplace.domain.SearchPlace;
-import com.kabang.searchplace.dto.SearchFavoriteDto;
+import com.kabang.searchplace.dto.SearchFavoriteResponseDto;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -15,21 +15,19 @@ public class SearchPlaceRepository {
     @PersistenceContext
     private EntityManager em;
 
-    public SearchPlace saveHistory(SearchPlace searchPlace) {
+    public void saveHistory(SearchPlace searchPlace) {
         searchPlace.setSearchTime(LocalDateTime.now());
         em.persist(searchPlace);
-        return searchPlace;
     }
 
-    public List<SearchPlace> findHistory(SearchPlace searchPlace) {
-
-        return em.createQuery("select m from SearchPlace m where m.userId = :userId", SearchPlace.class)
-                .setParameter("userId", searchPlace.getUserId())
+    public List<SearchPlace> findHistory(String userId) {
+        return em.createQuery("select m from SearchPlace m where m.userId = :userId order by m.searchTime desc", SearchPlace.class)
+                .setParameter("userId", userId)
                 .getResultList();
     }
 
-    public List<SearchFavoriteDto> findFavorite() {
-        return em.createQuery("select m.keyword, count(m.userId) as cnt from SearchPlace m group by m.keyword order by cnt desc")
+    public List<SearchFavoriteResponseDto> findFavorite() {
+        return em.createQuery("select m.keyword, count(m.userId) as cnt from SearchPlace m group by m.keyword order by cnt desc", SearchFavoriteResponseDto.class)
                 .getResultList();
     }
 }

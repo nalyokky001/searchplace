@@ -13,7 +13,7 @@ public class KakaoApiHelper {
     private final RestTemplate restTemplate = new RestTemplate();
 
     private final String KAKAO_REST_API_ID = "2f70b85f0c53ed6b43fef2e8448e36f4";
-    private final String kakaoApiUrl_searchPlace = "https://dapi.kakao.com/v2/local/search/keyword.json?query={keyword}";
+    private final String kakaoApiUrl_searchPlace = "https://dapi.kakao.com/v2/local/search/keyword.json?query={keyword}&size=10";
 
     public KakaoApiResponseDto searchPlaceByKeyword(String keyword) {
 

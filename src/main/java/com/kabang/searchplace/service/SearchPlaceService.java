@@ -3,23 +3,17 @@ package com.kabang.searchplace.service;
 import com.kabang.searchplace.common.KakaoApiHelper;
 import com.kabang.searchplace.common.NaverApiHelper;
 import com.kabang.searchplace.domain.SearchPlace;
-import com.kabang.searchplace.dto.KakaoApiResponseDto;
-import com.kabang.searchplace.dto.NaverApiResponseDto;
-import com.kabang.searchplace.dto.SearchFavoriteDto;
-import com.kabang.searchplace.dto.SearchPlaceResponseDto;
+import com.kabang.searchplace.dto.*;
 import com.kabang.searchplace.repository.SearchPlaceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,24 +40,30 @@ public class SearchPlaceService {
         NaverApiResponseDto naverApiResponseDto = naverApiHelper.searchPlaceByKeyword(searchPlace.getKeyword());
         KakaoApiResponseDto kakaoApiResponseDto = kakaoApiHelper.searchPlaceByKeyword(searchPlace.getKeyword());
 
-        result.addAll(naverApiResponseDto.getItems().stream()
-                .map(o -> new SearchPlaceResponseDto(o))
-                .collect(Collectors.toList()));
+        List<SearchPlaceResponseDto> resultByNaver = naverApiResponseDto.getItems().stream()
+                .map(SearchPlaceResponseDto::new)
+                .collect(Collectors.toList());
 
-        result.addAll(kakaoApiResponseDto.getDocuments().stream()
-                .map(o -> new SearchPlaceResponseDto(o))
-                .collect(Collectors.toList()));
+        List<SearchPlaceResponseDto> resultByKakao = kakaoApiResponseDto.getDocuments().stream()
+                .map(SearchPlaceResponseDto::new)
+                .collect(Collectors.toList());
+
+        result.addAll(resultByKakao.stream().filter(k -> resultByNaver.stream().anyMatch(n -> k.getPlaceName().equals(n.getPlaceName()))).collect(Collectors.toList()));
+        result.addAll(resultByKakao.stream().filter(k -> resultByNaver.stream().noneMatch(n -> k.getPlaceName().equals(n.getPlaceName()))).collect(Collectors.toList()));
+        result.addAll(resultByNaver.stream().filter(n -> resultByKakao.stream().noneMatch(k -> n.getPlaceName().equals(k.getPlaceName()))).collect(Collectors.toList()));
 
         searchPlaceRepository.saveHistory(searchPlace);
 
         return result;
     }
 
-    public List<SearchPlace> searchHistory(SearchPlace searchPlace) {
-        return searchPlaceRepository.findHistory(searchPlace);
+    public List<SearchHistoryResponseDto> searchHistory(String userId) {
+        return searchPlaceRepository.findHistory(userId).stream()
+                .map(SearchHistoryResponseDto::new)
+                .collect(Collectors.toList());
     }
 
-    public List<SearchFavoriteDto> searchFavorite() {
+    public List<SearchFavoriteResponseDto> searchFavorite() {
         return searchPlaceRepository.findFavorite();
     }
 }
