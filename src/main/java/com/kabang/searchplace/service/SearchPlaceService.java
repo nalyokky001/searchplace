@@ -1,9 +1,12 @@
 package com.kabang.searchplace.service;
 
+import com.kabang.searchplace.common.KakaoApiHelper;
+import com.kabang.searchplace.common.NaverApiHelper;
 import com.kabang.searchplace.domain.SearchPlace;
 import com.kabang.searchplace.dto.KakaoApiResponseDto;
 import com.kabang.searchplace.dto.NaverApiResponseDto;
 import com.kabang.searchplace.dto.SearchFavoriteDto;
+import com.kabang.searchplace.dto.SearchPlaceResponseDto;
 import com.kabang.searchplace.repository.SearchPlaceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,73 +17,49 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class SearchPlaceService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Resource
+    private NaverApiHelper naverApiHelper;
 
-    private final String NAVER_CLIENT_ID = "hvk1hpWP_P2JxkxyqCad";
-    private final String NAVER_CLIEND_SECRET = "jgZOl01DhZ";
-
-    private final String naverApiUrl_searchPlace = "https://openapi.naver.com/v1/search/local.json?query={keyword}&display=5";
-
-    private final String KAKAO_REST_API_ID = "2f70b85f0c53ed6b43fef2e8448e36f4";
-
-    private final String kakaoApiUrl_searchPlace = "https://dapi.kakao.com/v2/local/search/keyword.json?query={keyword}";
+    @Resource
+    private KakaoApiHelper kakaoApiHelper;
 
     private final SearchPlaceRepository searchPlaceRepository;
-    private static Logger logger = LoggerFactory.getLogger(MemberService.class);
+    private static Logger logger = LoggerFactory.getLogger(SearchPlaceService.class);
 
     public SearchPlaceService(SearchPlaceRepository searchPlaceRepository) {
         this.searchPlaceRepository = searchPlaceRepository;
     }
 
-    public NaverApiResponseDto searchPlaceByNaver(SearchPlace searchPlace) {
+    public List<SearchPlaceResponseDto> searchPlace(SearchPlace searchPlace) {
 
-        NaverApiResponseDto naverApiResponseDto;
-        final HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Naver-Client-Id", NAVER_CLIENT_ID);
-        headers.set("X-Naver-Client-Secret", NAVER_CLIEND_SECRET);
+        List<SearchPlaceResponseDto> result = new ArrayList<>();
 
-        final HttpEntity<String> entity = new HttpEntity<>(headers);
+        NaverApiResponseDto naverApiResponseDto = naverApiHelper.searchPlaceByKeyword(searchPlace.getKeyword());
+        KakaoApiResponseDto kakaoApiResponseDto = kakaoApiHelper.searchPlaceByKeyword(searchPlace.getKeyword());
 
-        try {
-            naverApiResponseDto = restTemplate.exchange(naverApiUrl_searchPlace, HttpMethod.GET, entity, NaverApiResponseDto.class, searchPlace.getKeyword()).getBody();
+        result.addAll(naverApiResponseDto.getItems().stream()
+                .map(o -> new SearchPlaceResponseDto(o))
+                .collect(Collectors.toList()));
 
-            searchPlaceRepository.saveHistory(searchPlace);
-        } catch (Exception e) {
-            return null;
-        }
+        result.addAll(kakaoApiResponseDto.getDocuments().stream()
+                .map(o -> new SearchPlaceResponseDto(o))
+                .collect(Collectors.toList()));
 
-        return naverApiResponseDto;
-    }
+        searchPlaceRepository.saveHistory(searchPlace);
 
-    public KakaoApiResponseDto searchPlaceByKakao(SearchPlace searchPlace) {
-
-        KakaoApiResponseDto kakaoApiResponseDto;
-        final HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK " + KAKAO_REST_API_ID);
-
-        final HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        try {
-            kakaoApiResponseDto = restTemplate.exchange(kakaoApiUrl_searchPlace, HttpMethod.GET, entity, KakaoApiResponseDto.class, searchPlace.getKeyword()).getBody();
-
-            searchPlaceRepository.saveHistory(searchPlace);
-        } catch (Exception e) {
-            return null;
-        }
-
-        logger.info("kakao : " + kakaoApiResponseDto.toString());
-
-        return kakaoApiResponseDto;
+        return result;
     }
 
     public List<SearchPlace> searchHistory(SearchPlace searchPlace) {
-
         return searchPlaceRepository.findHistory(searchPlace);
     }
 

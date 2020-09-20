@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @RestController
@@ -21,33 +22,17 @@ public class SearchPlaceController {
         this.searchPlaceService = searchPlaceService;
     }
 
-    @PostMapping("/search/place/naver")
+    @PostMapping("/search/place")
     @ResponseBody
-    public NaverApiResponseDto searchPlace(@RequestBody @Valid SearchPlaceRequestDto requestPlace) {
-
-        logger.info(requestPlace.getUserId());
-        logger.info(requestPlace.getKeyword());
+    public List<SearchPlaceResponseDto> searchPlace(@RequestBody @Valid SearchPlaceRequestDto requestPlace) {
 
         SearchPlace searchPlace = new SearchPlace();
         searchPlace.setUserId(requestPlace.getUserId());
         searchPlace.setKeyword(requestPlace.getKeyword());
 
-        NaverApiResponseDto responseDto = searchPlaceService.searchPlaceByNaver(searchPlace);
+        List<SearchPlaceResponseDto> result = searchPlaceService.searchPlace(searchPlace);
 
-        return responseDto;
-    }
-
-    @PostMapping("/search/place/kakao")
-    @ResponseBody
-    public KakaoApiResponseDto searchPlaceByKakao(@RequestBody @Valid SearchPlaceRequestDto requestPlace) {
-
-        SearchPlace searchPlace = new SearchPlace();
-        searchPlace.setUserId(requestPlace.getUserId());
-        searchPlace.setKeyword(requestPlace.getKeyword());
-
-        KakaoApiResponseDto responseDto = searchPlaceService.searchPlaceByKakao(searchPlace);
-
-        return responseDto;
+        return result;
     }
 
     @PostMapping("/search/history")
@@ -63,7 +48,6 @@ public class SearchPlaceController {
     @GetMapping("/search/favorite")
     @ResponseBody
     public List<SearchFavoriteDto> searchFavorite() {
-
         return searchPlaceService.searchFavorite();
     }
 }

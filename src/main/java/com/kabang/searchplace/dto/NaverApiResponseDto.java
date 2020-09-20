@@ -2,23 +2,26 @@ package com.kabang.searchplace.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class NaverApiResponseDto {
 
     private int display;
     private int total;
     private int start;
-    private Item[] items;
+    public List<Item> items;
 
-    static class Item {
-        public String title;
-        public String link;
-        public String category;
-        public String description;
-        public String telephone;
-        public String address;
-        public String roadAddress;
-        public String mapx;
-        public String mapy;
+    @Data
+    public static class Item {
+        private String title;
+        private String link;
+        private String category;
+        private String description;
+        private String telephone;
+        private String address;
+        private String roadAddress;
+        private String mapx;
+        private String mapy;
     }
 }

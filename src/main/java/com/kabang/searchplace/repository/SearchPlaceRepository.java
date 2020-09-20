@@ -29,9 +29,7 @@ public class SearchPlaceRepository {
     }
 
     public List<SearchFavoriteDto> findFavorite() {
-        List<SearchFavoriteDto> result = em.createQuery("select m.keyword, count(m.userId) as cnt from SearchPlace m group by m.keyword", SearchFavoriteDto.class)
+        return em.createQuery("select m.keyword, count(m.userId) as cnt from SearchPlace m group by m.keyword order by cnt desc")
                 .getResultList();
-
-        return result;
     }
 }
