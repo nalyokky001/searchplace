@@ -18,4 +18,10 @@ public class Member {
 
     @Column
     private String password;
+
+    @Column
+    private String salt;
+
+    @Column
+    private String apiKey;
 }

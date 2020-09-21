@@ -22,24 +22,19 @@ public class SearchPlaceController {
 
     @PostMapping("/search/place")
     @ResponseBody
-    public List<SearchPlaceResponseDto> searchPlace(@RequestBody @Valid SearchPlaceRequestDto requestDto) {
-
-        SearchPlace searchPlace = new SearchPlace();
-        searchPlace.setUserId(requestDto.getUserId());
-        searchPlace.setKeyword(requestDto.getKeyword());
-
-        return searchPlaceService.searchPlace(searchPlace);
+    public SearchPlaceResponseResultDto searchPlace(@RequestBody @Valid SearchPlaceRequestDto requestDto) {
+        return searchPlaceService.searchPlace(requestDto);
     }
 
     @PostMapping("/search/history")
     @ResponseBody
-    public List<SearchHistoryResponseDto> searchHistory(@RequestBody @Valid SearchHistoryRequestDto requestDto) {
-        return searchPlaceService.searchHistory(requestDto.getUserId());
+    public SearchHistoryResponseResultDto searchHistory(@RequestBody @Valid SearchHistoryRequestDto requestDto) {
+        return searchPlaceService.searchHistory(requestDto);
     }
 
-    @GetMapping("/search/favorite")
+    @PostMapping("/search/favorite")
     @ResponseBody
-    public List<SearchFavoriteResponseDto> searchFavorite() {
-        return searchPlaceService.searchFavorite();
+    public SearchFavoriteResponseResultDto searchFavorite(@RequestBody @Valid SearchFavoriteRequestDto requestDto) {
+        return searchPlaceService.searchFavorite(requestDto);
     }
 }

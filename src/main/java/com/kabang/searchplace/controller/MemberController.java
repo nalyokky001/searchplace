@@ -26,22 +26,15 @@ public class MemberController {
     @ResponseBody
     public MemberResponseDto join(@RequestBody @Valid MemberRequestDto requestMember) {
 
-        logger.info(requestMember.getUserId());
-        logger.info(requestMember.getPassword());
-
         MemberResponseDto responseMember = new MemberResponseDto();
 
-        Member member = new Member();
-        member.setUserId(requestMember.getUserId());
-        member.setPassword(requestMember.getPassword());
-
         try {
-            String createdUserId = memberService.join(member);
+            String createdUserId = memberService.join(requestMember);
             responseMember.setUserId(createdUserId);
             responseMember.setMessage("success");
         } catch (Exception e) {
             responseMember.setUserId(requestMember.getUserId());
-            responseMember.setMessage("duplicated");
+            responseMember.setMessage("fail : already exist ID");
         }
 
         return responseMember;
@@ -51,9 +44,6 @@ public class MemberController {
     @ResponseBody
     public MemberResponseDto login(@RequestBody @Valid MemberRequestDto requestMember) {
 
-        logger.info(requestMember.getUserId());
-        logger.info(requestMember.getPassword());
-
         Member member = new Member();
         member.setUserId(requestMember.getUserId());
         member.setPassword(requestMember.getPassword());
@@ -62,15 +52,16 @@ public class MemberController {
         MemberResponseDto responseMember = new MemberResponseDto();
 
         try {
-            result = memberService.login(member);
+            result = memberService.login(requestMember);
             responseMember.setUserId(result.getUserId());
+            responseMember.setApiKey(result.getApiKey());
             responseMember.setMessage("success");
         } catch (MyDataNotFoundException mdnf) {
             responseMember.setUserId(requestMember.getUserId());
-            responseMember.setMessage("userId is not exist.");
+            responseMember.setMessage("fail : userId is not exist.");
         } catch (MyPasswdNotCorrectException mpnc) {
             responseMember.setUserId(requestMember.getUserId());
-            responseMember.setMessage("user password is not correct.");
+            responseMember.setMessage("fail : user password is not correct.");
         }
 
         return responseMember;

@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class SearchPlaceRepository {
@@ -27,7 +29,16 @@ public class SearchPlaceRepository {
     }
 
     public List<SearchFavoriteResponseDto> findFavorite() {
-        return em.createQuery("select m.keyword, count(m.userId) as cnt from SearchPlace m group by m.keyword order by cnt desc", SearchFavoriteResponseDto.class)
-                .getResultList();
+        List<Object[]> tempResult = em.createQuery("select m.keyword as keyword, count(m.userId) as cnt from SearchPlace as m group by m.keyword order by cnt desc").getResultList();
+        List<SearchFavoriteResponseDto> result = new ArrayList<>();
+
+        for (Object[] tempRow:tempResult) {
+            SearchFavoriteResponseDto tempDto = new SearchFavoriteResponseDto();
+            tempDto.setKeyword((String)tempRow[0]);
+            tempDto.setCnt(((Long)tempRow[1]).intValue());
+            result.add(tempDto);
+        }
+        
+        return result;
     }
 }

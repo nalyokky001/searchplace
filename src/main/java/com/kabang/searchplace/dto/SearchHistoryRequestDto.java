@@ -9,4 +9,7 @@ public class SearchHistoryRequestDto {
 
     @NotEmpty
     private String userId;
+
+    @NotEmpty
+    private String apiKey;
 }

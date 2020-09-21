@@ -5,13 +5,10 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class SearchPlaceRequestDto {
+public class SearchFavoriteRequestDto {
 
     @NotEmpty
     private String userId;
-
-    @NotEmpty
-    private String keyword;
 
     @NotEmpty
     private String apiKey;
