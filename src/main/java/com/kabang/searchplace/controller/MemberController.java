@@ -35,9 +35,11 @@ public class MemberController {
             String createdUserId = memberService.join(requestMember);
             responseMember.setUserId(createdUserId);
             responseMember.setMessage("success");
+            logger.debug(responseMember.getMessage());
         } catch (Exception e) {
             responseMember.setUserId(requestMember.getUserId());
             responseMember.setMessage("fail : already exist ID");
+            logger.error(responseMember.getMessage());
         }
 
         return responseMember;
@@ -59,12 +61,15 @@ public class MemberController {
             responseMember.setUserId(result.getUserId());
             responseMember.setApiKey(result.getApiKey());
             responseMember.setMessage("success");
+            logger.debug(responseMember.getMessage());
         } catch (MyDataNotFoundException mdnf) {
             responseMember.setUserId(requestMember.getUserId());
             responseMember.setMessage("fail : userId is not exist.");
+            logger.error(responseMember.getMessage());
         } catch (MyPasswdNotCorrectException mpnc) {
             responseMember.setUserId(requestMember.getUserId());
             responseMember.setMessage("fail : user password is not correct.");
+            logger.error(responseMember.getMessage());
         }
 
         return responseMember;
