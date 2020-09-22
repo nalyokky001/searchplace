@@ -1,7 +1,6 @@
 package com.kabang.searchplace.common;
 
 import com.kabang.searchplace.domain.Member;
-import com.kabang.searchplace.dto.SearchPlaceResponseResultDto;
 import com.kabang.searchplace.dto.SearchResultDto;
 import com.kabang.searchplace.repository.MemberRepository;
 import org.springframework.stereotype.Component;

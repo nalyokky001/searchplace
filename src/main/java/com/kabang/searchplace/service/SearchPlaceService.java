@@ -3,10 +3,8 @@ package com.kabang.searchplace.service;
 import com.kabang.searchplace.common.CommonUtil;
 import com.kabang.searchplace.common.KakaoApiHelper;
 import com.kabang.searchplace.common.NaverApiHelper;
-import com.kabang.searchplace.domain.Member;
 import com.kabang.searchplace.domain.SearchPlace;
 import com.kabang.searchplace.dto.*;
-import com.kabang.searchplace.repository.MemberRepository;
 import com.kabang.searchplace.repository.SearchPlaceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.xml.transform.Result;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
