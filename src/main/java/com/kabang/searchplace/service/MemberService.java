@@ -1,6 +1,5 @@
 package com.kabang.searchplace.service;
 
-import com.kabang.searchplace.common.CommonUtil;
 import com.kabang.searchplace.common.EncryptHelper;
 import com.kabang.searchplace.domain.Member;
 import com.kabang.searchplace.dto.MemberRequestDto;
@@ -35,7 +34,8 @@ public class MemberService {
             member.setUserId(requestMember.getUserId());
             member.setPassword(newPassword);
             member.setSalt(salt);
-            member.setApiKey(CommonUtil.generateApiKey());
+            // member.setApiKey(CommonUtil.generateApiKey());
+            member.setApiKey("testApiKey"); // test 목적 때문에 고정키로 임시 변경
 
             createdUserId = memberRepository.save(member);
         } catch(Exception e) {

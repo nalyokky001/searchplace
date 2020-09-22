@@ -8,7 +8,10 @@ import com.kabang.searchplace.exception.MyPasswdNotCorrectException;
 import com.kabang.searchplace.service.MemberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
@@ -22,7 +25,7 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/member")
+    @PostMapping("/member/join")
     @ResponseBody
     public MemberResponseDto join(@RequestBody @Valid MemberRequestDto requestMember) {
 
@@ -40,7 +43,7 @@ public class MemberController {
         return responseMember;
     }
 
-    @GetMapping("/member")
+    @PostMapping("/member/login")
     @ResponseBody
     public MemberResponseDto login(@RequestBody @Valid MemberRequestDto requestMember) {
 

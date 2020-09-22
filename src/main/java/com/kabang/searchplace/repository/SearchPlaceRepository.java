@@ -32,6 +32,9 @@ public class SearchPlaceRepository {
         List<SearchFavoriteResponseDto> result = new ArrayList<>();
 
         for (Object[] tempRow:tempResult) {
+            if (result.size() > 9) {
+                return result;
+            }
             SearchFavoriteResponseDto tempDto = new SearchFavoriteResponseDto();
             tempDto.setKeyword((String)tempRow[0]);
             tempDto.setCnt(((Long)tempRow[1]).intValue());
