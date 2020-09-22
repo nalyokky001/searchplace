@@ -12,4 +12,9 @@ public class MemberRequestDto {
 
     @NotEmpty
     private String password;
+
+    public MemberRequestDto(String userId, String password) {
+        this.userId = userId;
+        this.password = password;
+    }
 }
